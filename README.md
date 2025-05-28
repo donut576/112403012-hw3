@@ -63,7 +63,12 @@
       ```
 
 ## 專案結構說明
-112403012-hw3/ ├── comment_project/ │ ├── board/ # 留言板 app │ ├── comment_project/ # Django 專案設定 │ ├── manage.py ├──
+112403012-hw3/
+├── comment_project/
+│   ├── board/              # 留言板 app
+│   ├── comment_project/    # Django 專案設定
+│   ├── manage.py
+├── README.md
 
 
 ## 注意事項（Warning）
