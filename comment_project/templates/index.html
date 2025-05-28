@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Board</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入 jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .comment-box {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 25px;
+            background-color: #fff;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+        .comment-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: #fff;
+            margin-bottom: 15px;
+        }
+        .comment-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .comment-message {
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+        .comment-time {
+            font-size: 0.85rem;
+            color: gray;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="comment-box shadow-sm">
+        <h3 class="text-center mb-4">Comment Board</h3>
+
+        <!-- 留言表單 -->
+        <form id="comment-form">
+            <div class="mb-3">
+                <label for="username" class="form-label">Name</label>
+                <input type="text" id="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="comment" class="form-label">Comment</label>
+                <textarea id="comment" class="form-control" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Comment</button>
+        </form>
+
+        <hr>
+
+        <!-- 留言列表 -->
+        <div id="comment-list">
+            <!-- 動態產生留言 -->
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // 載入留言
+            function loadComments() {
+                $.get("/api/comments/", function (data) {
+                    $('#comment-list').empty();
+                    data.forEach(comment => {
+                        const html = `
+                            <div class="comment-item">
+                                <div class="comment-name">${comment.name}</div>
+                                <div class="comment-message">${comment.message}</div>
+                                <div class="comment-time">${comment.created_at}</div>
+                            </div>`;
+                        $('#comment-list').append(html);
+                    });
+                });
+            }
+
+            loadComments(); // 初始載入留言
+
+            // 發送留言
+            $('#comment-form').on('submit', function (e) {
+                e.preventDefault();
+                const name = $('#username').val().trim();
+                const message = $('#comment').val().trim();
+
+                if (name && message) {
+                    $.ajax({
+                        url: "/api/post/",
+                        method: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ name: name, message: message }),
+                        success: function () {
+                            $('#username').val('');
+                            $('#comment').val('');
+                            loadComments(); // 重新載入
+                        },
+                        error: function () {
+                            alert("留言送出失敗，請稍後再試！");
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
